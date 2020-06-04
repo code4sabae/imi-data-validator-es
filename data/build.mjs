@@ -1,13 +1,11 @@
-const fs = require("fs");
-
 const classes = {};
 
-for (let i = 2; i < process.argv.length; i++) {
+for (let i = 0; i < Deno.args.length; i++) {
   let key = "";
   let name = "";
   let lower = [];
   let upper = [];
-  fs.readFileSync(process.argv[i], "UTF-8").split("\n").forEach(line => {
+  new TextDecoder().decode(Deno.readFileSync(Deno.args[i], "UTF-8")).split("\n").forEach(line => {
     line = line.replace(/\s/g, "");
     if (line.match(/^#参照URI:"(.+)"$/)) {
       key = RegExp.$1;
@@ -58,4 +56,6 @@ for (let i = 2; i < process.argv.length; i++) {
 
 }
 
-console.log(`module.exports = ${JSON.stringify(classes, null, 2)};`);
+console.log(`const charsets = ${JSON.stringify(classes, null, 2)};`);
+console.log("export default charsets;");
+

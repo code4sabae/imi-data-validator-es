@@ -1,4 +1,4 @@
-const Parser = require('imiv-parser');
+import Parser from "https://code4sabae.github.io/imiv-parser/IMIVParser.mjs";
 const parse = function(imiv) {
   const prefix = {};
   const dig = function(a) {
@@ -23,7 +23,7 @@ const parse = function(imiv) {
   });
 };
 
-const Util = require("./lib/util");
+import Util from "./lib/util.mjs";
 
 const isDatatype = (pname) => ["xsd:", "uncefact", "ic:電話番号型"].find(a => pname.indexOf(a) === 0);
 const normalize = (pname) => pname.replace(/^ic:/, "");
@@ -71,7 +71,7 @@ Logger.prototype = {
 
 // datamodel は必要な語彙とデータモデルを連結した語彙記法の文字列
 // instance を validate するための関数を返す
-module.exports = function(datamodel, options) {
+const exports = function(datamodel, options) {
 
   const __DISABLE_AUTO_FIX__ = !!(options && options["disable_auto_fix"] === true);
 
@@ -330,3 +330,5 @@ module.exports = function(datamodel, options) {
   };
 
 };
+
+export default exports;

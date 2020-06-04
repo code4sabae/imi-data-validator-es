@@ -1,12 +1,12 @@
 # About
 
-`lib/charsets.js` を作成するためのワークスペース
+`lib/charsets.mjs` を作成するためのワークスペース
 
 # 手順
 
 ```
 $ cd imi-data-validator/data
-$ node build.js ISOIEC* > ../lib/charsets.js
+$ deno run --allow-read build.mjs ISOIEC* > ../lib/charsets.mjs
 ```
 
 # 備考

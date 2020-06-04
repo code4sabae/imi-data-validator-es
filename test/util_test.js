@@ -1,59 +1,59 @@
-const Util = require("../lib/util");
-const expect = require('chai').expect;
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import Util from "../lib/util.mjs";
+
+const describe = (name, func) => func();
 
 describe('imi-data-validator#util', () => {
-
   describe('datatype', () => {
     describe('xsd:integer', () => {
-      it('正常', () => {
-        expect(Util.datatype("xsd:integer", "-256")).deep.equal({
+      Deno.test('正常', () => {
+        assertEquals(Util.datatype("xsd:integer", "-256"), {
           "種別": "INFO"
         });
       });
-      it('異常', () => {
-        expect(Util.datatype("xsd:integer", "0256")).deep.equal({
+      Deno.test('異常', () => {
+        assertEquals(Util.datatype("xsd:integer", "0256"), {
           "種別": "ERROR",
           "説明": "xsd:integer ではありません"
         });
       });
     });
     describe('xsd:nonNegativeInteger', () => {
-      it('正常', () => {
-        expect(Util.datatype("xsd:nonNegativeInteger", "256")).deep.equal({
+      Deno.test('正常', () => {
+        assertEquals(Util.datatype("xsd:nonNegativeInteger", "256"), {
           "種別": "INFO"
         });
       });
-      it('異常', () => {
-        expect(Util.datatype("xsd:nonNegativeInteger", "-256")).deep.equal({
+      Deno.test('異常', () => {
+        assertEquals(Util.datatype("xsd:nonNegativeInteger", "-256"), {
           "種別": "ERROR",
           "説明": "xsd:nonNegativeInteger ではありません"
         });
       });
     });
     describe('xsd:date', () => {
-      it('正常', () => {
-        expect(Util.datatype("xsd:date", "2019-12-31")).deep.equal({
+      Deno.test('正常', () => {
+        assertEquals(Util.datatype("xsd:date", "2019-12-31"), {
           "種別": "INFO"
         });
       });
-      it('異常', () => {
-        expect(Util.datatype("xsd:date", "2019年12月31日")).deep.equal({
+      Deno.test('異常', () => {
+        assertEquals(Util.datatype("xsd:date", "2019年12月31日"), {
           "種別": "ERROR",
           "説明": "xsd:date ではありません"
         });
       });
     });
   });
-
   describe('eq', () => {
     describe('文字列', () => {
-      it('正常', () => {
-        expect(Util.eq("Hello", "Hello")).deep.equal({
+      Deno.test('正常', () => {
+        assertEquals(Util.eq("Hello", "Hello"), {
           "種別": "INFO"
         });
       });
-      it('異常', () => {
-        expect(Util.eq("Hello", "World")).deep.equal({
+      Deno.test('異常', () => {
+        assertEquals(Util.eq("Hello", "World"), {
           "種別": "ERROR",
           "説明": "Hello でなければなりません"
         });
@@ -63,27 +63,27 @@ describe('imi-data-validator#util', () => {
 
   describe('lt', () => {
     describe('数値', () => {
-      it('>', () => {
-        expect(Util.lt("5", "4")).deep.equal({
+      Deno.test('>', () => {
+        assertEquals(Util.lt("5", "4"), {
           "種別": "INFO"
         });
       });
-      it('=', () => {
-        expect(Util.lt("5", "5")).deep.equal({
+      Deno.test('=', () => {
+        assertEquals(Util.lt("5", "5"), {
           "種別": "ERROR",
           "説明": "5 より小さくなければいけません"
         });
       });
-      it('<', () => {
-        expect(Util.lt("5", "6")).deep.equal({
+      Deno.test('<', () => {
+        assertEquals(Util.lt("5", "6"), {
           "種別": "ERROR",
           "説明": "5 より小さくなければいけません"
         });
       });
     });
     describe('非数値', () => {
-      it('文字列', () => {
-        expect(Util.lt("5", "world")).deep.equal({
+      Deno.test('文字列', () => {
+        assertEquals(Util.lt("5", "world"), {
           "種別": "ERROR",
           "説明": "数値ではありません"
         });
@@ -93,26 +93,26 @@ describe('imi-data-validator#util', () => {
 
   describe('le', () => {
     describe('数値', () => {
-      it('>', () => {
-        expect(Util.le("5", "4")).deep.equal({
+      Deno.test('>', () => {
+        assertEquals(Util.le("5", "4"), {
           "種別": "INFO"
         });
       });
-      it('=', () => {
-        expect(Util.le("5", "5")).deep.equal({
+      Deno.test('=', () => {
+        assertEquals(Util.le("5", "5"), {
           "種別": "INFO"
         });
       });
-      it('<', () => {
-        expect(Util.le("5", "6")).deep.equal({
+      Deno.test('<', () => {
+        assertEquals(Util.le("5", "6"), {
           "種別": "ERROR",
           "説明": "5 以下でなければいけません"
         });
       });
     });
     describe('非数値', () => {
-      it('文字列', () => {
-        expect(Util.le("5", "world")).deep.equal({
+      Deno.test('文字列', () => {
+        assertEquals(Util.le("5", "world"), {
           "種別": "ERROR",
           "説明": "数値ではありません"
         });
@@ -122,27 +122,27 @@ describe('imi-data-validator#util', () => {
 
   describe('gt', () => {
     describe('数値', () => {
-      it('>', () => {
-        expect(Util.gt("5", "4")).deep.equal({
+      Deno.test('>', () => {
+        assertEquals(Util.gt("5", "4"), {
           "種別": "ERROR",
           "説明": "5 より大きくなければいけません"
         });
       });
-      it('=', () => {
-        expect(Util.gt("5", "5")).deep.equal({
+      Deno.test('=', () => {
+        assertEquals(Util.gt("5", "5"), {
           "種別": "ERROR",
           "説明": "5 より大きくなければいけません"
         });
       });
-      it('<', () => {
-        expect(Util.gt("5", "6")).deep.equal({
+      Deno.test('<', () => {
+        assertEquals(Util.gt("5", "6"), {
           "種別": "INFO"
         });
       });
     });
     describe('非数値', () => {
-      it('文字列', () => {
-        expect(Util.gt("5", "world")).deep.equal({
+      Deno.test('文字列', () => {
+        assertEquals(Util.gt("5", "world"), {
           "種別": "ERROR",
           "説明": "数値ではありません"
         });
@@ -152,26 +152,26 @@ describe('imi-data-validator#util', () => {
 
   describe('ge', () => {
     describe('数値', () => {
-      it('>', () => {
-        expect(Util.ge("5", "4")).deep.equal({
+      Deno.test('>', () => {
+        assertEquals(Util.ge("5", "4"), {
           "種別": "ERROR",
           "説明": "5 以上でなければいけません"
         });
       });
-      it('=', () => {
-        expect(Util.ge("5", "5")).deep.equal({
+      Deno.test('=', () => {
+        assertEquals(Util.ge("5", "5"), {
           "種別": "INFO"
         });
       });
-      it('<', () => {
-        expect(Util.ge("5", "6")).deep.equal({
+      Deno.test('<', () => {
+        assertEquals(Util.ge("5", "6"), {
           "種別": "INFO"
         });
       });
     });
     describe('非数値', () => {
-      it('文字列', () => {
-        expect(Util.ge("5", "world")).deep.equal({
+      Deno.test('文字列', () => {
+        assertEquals(Util.ge("5", "world"), {
           "種別": "ERROR",
           "説明": "数値ではありません"
         });
@@ -180,13 +180,13 @@ describe('imi-data-validator#util', () => {
   });
 
   describe('pattern', () => {
-    it('正常', () => {
-      expect(Util.pattern("^[0-9]{5}$", "01234")).deep.equal({
+    Deno.test('正常', () => {
+      assertEquals(Util.pattern("^[0-9]{5}$", "01234"), {
         "種別": "INFO"
       });
     });
-    it('失敗', () => {
-      expect(Util.pattern("^[0-9]{5}$", "0123456789")).deep.equal({
+    Deno.test('失敗', () => {
+      assertEquals(Util.pattern("^[0-9]{5}$", "0123456789"), {
         "種別": "ERROR",
         "説明": "正規表現 ^[0-9]{5}$ に適合しません"
       });
@@ -199,19 +199,19 @@ describe('imi-data-validator#util', () => {
 
     describe('全角カナ', () => {
       const uri = KATAKANA;
-      it("正常", () => {
-        expect(Util.charset(uri, "アカサタナ")).deep.equal({
+      Deno.test("正常", () => {
+        assertEquals(Util.charset(uri, "アカサタナ"), {
           "種別": "INFO"
         });
       });
-      it("異常", () => {
-        expect(Util.charset(uri, "アカサタナはまやらわ")).deep.equal({
+      Deno.test("異常", () => {
+        assertEquals(Util.charset(uri, "アカサタナはまやらわ"), {
           "種別": "ERROR",
           "説明": "[IMIユーティリティ文字セット－カナ（全角）] で規定されていない文字が使用されています"
         });
       });
-      it("修復", () => {
-        expect(Util.charset(uri, "ｱｶｻﾀﾅ")).deep.equal([{
+      Deno.test("修復", () => {
+        assertEquals(Util.charset(uri, "ｱｶｻﾀﾅ"), [{
           "種別": "ERROR",
           "説明": "[IMIユーティリティ文字セット－カナ（全角）] で規定されていない文字が使用されています"
         }, {
@@ -223,19 +223,19 @@ describe('imi-data-validator#util', () => {
     });
     describe('数字', () => {
       const uri = NUMERIC;
-      it("正常", () => {
-        expect(Util.charset(uri, "0123456789")).deep.equal({
+      Deno.test("正常", () => {
+        assertEquals(Util.charset(uri, "0123456789"), {
           "種別": "INFO"
         });
       });
-      it("異常", () => {
-        expect(Util.charset(uri, "アカサタナはまやらわ")).deep.equal({
+      Deno.test("異常", () => {
+        assertEquals(Util.charset(uri, "アカサタナはまやらわ"), {
           "種別": "ERROR",
           "説明": "[IMIユーティリティ文字セット－数字] で規定されていない文字が使用されています"
         });
       });
-      it("修復", () => {
-        expect(Util.charset(uri, "０１２３４５6789")).deep.equal([{
+      Deno.test("修復", () => {
+        assertEquals(Util.charset(uri, "０１２３４５6789"), [{
           "種別": "ERROR",
           "説明": "[IMIユーティリティ文字セット－数字] で規定されていない文字が使用されています"
         }, {
@@ -247,19 +247,19 @@ describe('imi-data-validator#util', () => {
     });
     describe('非推奨', () => {
       const uri = "[NotRecommended]" + KATAKANA;
-      it("正常", () => {
-        expect(Util.charset(uri, "01234")).deep.equal({
+      Deno.test("正常", () => {
+        assertEquals(Util.charset(uri, "01234"), {
           "種別": "INFO"
         });
       });
-      it("非推奨のみ", () => {
-        expect(Util.charset(uri, "アカサタナ")).deep.equal({
+      Deno.test("非推奨のみ", () => {
+        assertEquals(Util.charset(uri, "アカサタナ"), {
           "種別": "WARNING",
           "説明": "[IMIユーティリティ文字セット－カナ（全角）] で規定された非推奨文字が使用されています"
         });
       });
-      it("混在", () => {
-        expect(Util.charset(uri, "01234アカサタナ")).deep.equal({
+      Deno.test("混在", () => {
+        assertEquals(Util.charset(uri, "01234アカサタナ"), {
           "種別": "WARNING",
           "説明": "[IMIユーティリティ文字セット－カナ（全角）] で規定された非推奨文字が使用されています"
         });
@@ -268,25 +268,25 @@ describe('imi-data-validator#util', () => {
 
     describe('推奨・非推奨混在', () => {
       const uri = NUMERIC + "|[NotRecommended]" + KATAKANA;
-      it("推奨", () => {
-        expect(Util.charset(uri, "01234")).deep.equal({
+      Deno.test("推奨", () => {
+        assertEquals(Util.charset(uri, "01234"), {
           "種別": "INFO"
         });
       });
-      it("非推奨", () => {
-        expect(Util.charset(uri, "アカサタナ")).deep.equal({
+      Deno.test("非推奨", () => {
+        assertEquals(Util.charset(uri, "アカサタナ"), {
           "種別": "WARNING",
           "説明": "[IMIユーティリティ文字セット－カナ（全角）] で規定された非推奨文字が使用されています"
         });
       });
-      it("推奨・非推奨", () => {
-        expect(Util.charset(uri, "01234アカサタナ")).deep.equal({
+      Deno.test("推奨・非推奨", () => {
+        assertEquals(Util.charset(uri, "01234アカサタナ"), {
           "種別": "WARNING",
           "説明": "[IMIユーティリティ文字セット－カナ（全角）] で規定された非推奨文字が使用されています"
         });
       });
-      it("推奨・禁止", () => {
-        expect(Util.charset(uri, "01234abcde")).deep.equal({
+      Deno.test("推奨・禁止", () => {
+        assertEquals(Util.charset(uri, "01234abcde"), {
           "種別": "ERROR",
           "説明": "[IMIユーティリティ文字セット－数字,IMIユーティリティ文字セット－カナ（全角）] で規定されていない文字が使用されています"
         });

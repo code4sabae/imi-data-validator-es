@@ -1,5 +1,7 @@
-const generate = require("../main");
-const expect = require('chai').expect;
+import { describe, it, expect, makeDirname } from "https://taisukef.github.io/denolib/nodelikeassert.mjs"
+const __dirname = makeDirname(import.meta.url)
+
+import generate from "../IMIDataValidator.mjs";
 
 const trim_metadata = (src) => {
   if (typeof src === 'string') return src;
@@ -12,7 +14,7 @@ const trim_metadata = (src) => {
   return dst;
 };
 
-const imi_core = require("fs").readFileSync(__dirname + "/imicore241.imiv.txt", "UTF-8");
+const imi_core = new TextDecoder().decode(Deno.readFileSync(__dirname + "/imicore241.imiv.txt", "UTF-8"));
 const imi_hojin = `
 #prefix ic: "http://imi.go.jp/ns/core/2#"
 #prefix hj: "http://example.org/"

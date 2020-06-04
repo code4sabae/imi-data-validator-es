@@ -1,42 +1,23 @@
-# IMIデータバリデーションコンポーネント
+# IMI データバリデーションコンポーネント ES
 
 所与のデータモデルに対して JSON-LD を検査し、
 場合によってはデータの修正や補完を行いつつ、
-検査結果をメタデータとして追記するライブラリです。
-コマンドラインツールおよび WebAPI サーバも提供されます。
+検査結果をメタデータとして追記するESモジュールです。
+コマンドラインツールおよび WebAPI サーバも提供されます。  
+（forked from [データバリデーションコンポーネント / IMIコンポーネントツール](https://info.gbiz.go.jp/tools/imi_tools/)）
+
+[![esmodules](https://taisukef.github.com/denolib/esmodulesbadge.svg)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules)
+[![deno](https://taisukef.github.com/denolib/denobadge.svg)](https://deno.land/)
 
 # 利用者向け情報
-
-
-## インストール
-
-適当な作業フォルダを作成しモジュールをインストールします。
-ここでは ${SOMEWHERE} フォルダに imi-moji-converter-1.0.0.tgz と imi-data-validator-1.0.0.tgz が
-あることを仮定しています。
-
-```
-$ ls ${SOMEWHERE}
-imi-moji-converter-1.0.0.tgz
-imi-data-validator-1.0.0.tgz
-
-$ mkdir work
-$ cd work
-$ cp ${SOMEWHERE}/imi-moji-converter-1.0.0.tgz .
-$ cp ${SOMEWHERE}/imi-data-validator-1.0.0.tgz .
-$ npm install ./imi-data-validator-1.0.0.tgz
-```
-
-なお、imi-data-validator はローカルパッケージ imi-moji-converter に依存しています。
-imi-data-validator-1.0.0.tgz をインストールする際には
-imi-data-validator-1.0.0.tgz と imi-moji-converter-1.0.0.tgz は同じフォルダに配置されている必要があります。
-
 
 ## API
 
 モジュール imi-data-validator は以下のような API の関数です。
 
 ```
-module.exports = function(imiv) {..}
+const exports = function(imiv) {..}
+export default exports;
 ```
 
 - imiv: imiv 文字列（必要な語彙定義およびデータモデル定義を連結したもの）
@@ -45,7 +26,7 @@ module.exports = function(imiv) {..}
 生成された関数は以下のような API を持ちます。
 
 ```
-function(json,options){..}
+function(json, options) {..}
 ```
 
 - json: バリデーション対象の JSON
@@ -58,13 +39,12 @@ function(json,options){..}
 以下の手順では genrate 関数によって imiv から validate 関数が生成され、
 validate 関数によって input (JSON) から output (JSON) に変換されます。
 
-```main.js
-const fs = require('fs');
-const generate = require('imi-data-validator');
+```main.mjs
+import generate from "https://code4sabae.github.io/imi-data-validator/IMIDataValidator.mjs";
 
-const imiv =
-  fs.readFileSync(__dirname+"/node_modules/imi-data-validator/example/imicore241.imiv.txt") +
-  fs.readFileSync(__dirname+"/node_modules/imi-data-validator/example/datamodel.imiv.txt");
+const path = "https://code4sabae.github.io/imi-data-validator/example/"
+const fetchText = async url => (await fetch(url)).text();
+const imiv = await fetchText(path + "imicore241.imiv.txt") + await fetchText(path + "datamodel.imiv.txt");
 
 const validate = generate(imiv);
 
@@ -76,13 +56,13 @@ const input = {
 
 const output = validate(input);
 
-console.log(JSON.stringify(output,null,2));
+console.log(JSON.stringify(output, null, 2));
 ```
 
 実行すると以下のような出力が得られます。
 
 ```
-$ node main.js
+$ deno run -A main.mjs
 {
   "@context": [
     "https://imi.go.jp/ns/core/context.jsonld",
@@ -112,14 +92,7 @@ $
 generate 関数の第二引数としてオプションを保持したオブジェクトを渡すことができます。
 
 ```
-const generate = require('imi-data-validator');
-
-const imiv =
-  fs.readFileSync(__dirname+"/example/imicore241.imiv.txt") +
-  fs.readFileSync(__dirname+"/example/datamodel.imiv.txt");
-
-const validate = generate(imiv,{disable_auto_fix:true});
-
+const validate = generate(imiv, { disable_auto_fix: true });
 ```
 
 オプションの意味は以下の通りです。
@@ -137,10 +110,19 @@ const validate = generate(imiv,{disable_auto_fix:true});
 - 文字セット制約（数値）の場合の、全角数字から半角数字への自動変換
 - 文字セット制約（カタカナ）の場合の、半角カタカナから全角カタカナへの自動変換
 
+# 開発者向け情報
+
+## 環境構築
+
+以下の手順で環境を構築します。
+
+```
+$ git clone https://github.com/code4sabae/imi-data-validator.git
+```
 
 ## コマンドラインツールとしての利用
 
-コマンドラインツールの実体は `bin/cli.js` です。
+コマンドラインツールの実体は `bin/cli.mjs` です。
 コマンドラインに語彙定義およびデータモデル定義を指定、
 さらに指定されたひとつのファイルまたは標準入力に含まれる JSON をパースして
 変換結果を標準出力に出力します。
@@ -148,8 +130,7 @@ const validate = generate(imiv,{disable_auto_fix:true});
 以下は動作確認用ファイル `example/simple.json` を変換する事例です。
 
 ```
-$ cd node_modules/imi-data-validator
-$ node bin/cli.js example/imicore241.imiv.txt example/datamodel.imiv.txt example/simple.json
+$ deno run -A bin/cli.mjs example/imicore241.imiv.txt example/datamodel.imiv.txt example/simple.json
 {
   "@context": [
     "https://imi.go.jp/ns/core/context.jsonld",
@@ -198,20 +179,19 @@ $
 
 ## サーバとしての利用
 
-コマンドラインツールの実体は `bin/server.js` です。
+コマンドラインツールの実体は `bin/server.mjs` です。
 以下の手順で任意のポートと語彙・データモデル定義を与えてサーバを起動します。
 
 ```
-$ cd node_modules/imi-data-validator
-$ node bin/server.js 3030 example/imicore241.imiv.txt example/datamodel.imiv.txt
+$ deno run --allow-net --allow-read bin/server.mjs 3030 example/imicore241.imiv.txt example/datamodel.imiv.txt
 imi-data-validator is running on port 3030
 ```
 
 なお、ポート番号や語彙・データモデル定義を指定しなかった場合には以下のように使用方法が出力されて終了します。
 
 ```
-$ node bin/server.js
-Usage: node server.js [port number] [IMIV_VOCABULARY]... [IMIV_DATAMODEL]
+$ deno run -A bin/server.mjs
+Usage: deno run --allow-net --allow-read server.js [port number] [IMIV_VOCABULARY]... [IMIV_DATAMODEL]
 $
 ```
 
@@ -243,55 +223,17 @@ $ curl -X POST -d '{"@context": "https://imi.go.jp/ns/core/context.jsonld","@typ
 $
 ```
 
-# 開発者向け情報
-
-## 環境構築
-
-以下の手順で環境を構築します。
-
-ここでは ${SOMEWHERE} フォルダに依存ライブラリである imi-moji-converter-1.0.0.tgz とソースアーカイブ imi-data-validator-1.0.0.src.tgz が
-あることを仮定しています。
-
-```
-$ cd work
-$ cp ${SOMEWHERE}/imi-moji-converter-1.0.0.tgz .
-$ mkdir imi-data-validator
-$ cd imi-data-validator
-$ tar xvzf ${SOMEWHERE}/imi-data-validator-1.0.0.src.tgz
-$ npm install
-```
-
-なお、imi-data-validator はローカルパッケージ imi-moji-converter に依存しています。
-imi-data-validator-1.0.0.src.tgz の展開後、 `npm install` を実行して
-依存ライブラリをインストールする際には imi-moji-converter-1.0.0.tgz が
-imi-data-validator フォルダと同じ階層に配置されている必要があります。
-
 ## テスト
 
-以下の手順でテストが実行され、テスト結果が出力されます。
+以下の手順でテストが実行され、テスト結果が出力されます。(deno test -A でもok!）
 
 ```
-$ npm test
-
-> imi-data-validator@1.0.0 test imi-data-validator
-> mocha
-
-
-
-  imi-data-validator#charsets
-    数字 ISOIEC10646Annex-G-supplement-NUMERIC-compliant
-      ✓ 定義
-      ✓ 数字だけの文字列を valid と判定できること
-      ✓ 数字以外を含む文字列を invalid と判定できること
-    カタカナ ISOIEC10646Annex-G-supplement-KATAKANA-compliant
-      ✓ 定義
-      ✓ カタカナだけの文字列を valid と判定できること
-      ✓ カタカナ以外を含む文字列を invalid と判定できること
-    JISX0208 ISOIEC10646-CJK-JISX0208-1990-compliant
-      ✓ 定義
-      ✓ JISX0208だけの文字列を valid と判定できること
-      ✓ JISX0208以外を含む文字列を invalid と判定できること
-
+$ deno test --allow-read
+test start:  imi-data-validator
+test start:  基本構造
+test start:  JSON-LD Context の付与
+test start:  メタデータの付与
+test start:  データモデルの評価: 基本構造
 (省略)
 
 $
@@ -299,13 +241,22 @@ $
 
 ## ファイル構成
 
-開発対象となる Javascript は以下の３つです。
+開発対象となる JavaScript は以下の３つです。
 
 ```
-main.js : 関数本体
-lib/util.js : リテラルに対する評価を実施するための関数群
-lib/charsets.js : 文字セット URI をキーとして、「文字セット名称」と「文字セット構成要素を正規表現の文字クラス相当に記述した文字列」を格納したオブジェクト
+IMIDataValidator.mjs : 関数本体
+lib/util.mjs : リテラルに対する評価を実施するための関数群
+lib/charsets.mjs : 文字セット URI をキーとして、「文字セット名称」と「文字セット構成要素を正規表現の文字クラス相当に記述した文字列」を格納したオブジェクト
 ```
 
-なお `lib/charsets.js` は `data/build.js` によって自動生成されます。
+なお `lib/charsets.mjs` は `data/build.mjs` によって自動生成されます。
 詳しくは `data/README.md` をご覧ください。
+
+## 依存関係
+
+[IMI共通語彙基盤ライブラリ　バージョン1.0.0 （ESモジュール） imiv-parser](https://github.com/code4sabae/imiv-parser/)  
+[IMI 全角半角統一コンポーネント（ESモジュール） imi-moji-converter](https://github.com/code4sabae/imi-moji-converter/)  
+
+## 出典
+
+本ライブラリは IMI 情報共有基盤 コンポーネントツール https://info.gbiz.go.jp/tools/imi_tools/ の「データバリデーションコンポーネント」をESモジュール対応したものです。
